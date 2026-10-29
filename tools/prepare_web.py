@@ -26,6 +26,7 @@ manifest = {
     ],
 }
 (web / "manifest.webmanifest").write_text(json.dumps(manifest), encoding="utf-8")
+copyfile(root / "tools" / "pointer_bridge.js", web / "pointer_bridge.js")
 
 html = index.read_text(encoding="utf-8")
 if "</head>" not in html or "</body>" not in html:
@@ -48,7 +49,7 @@ html, body {
   background: #1e5c44 !important;
   overscroll-behavior: none; touch-action: none;
 }
-canvas {
+canvas#canvas {
   position: fixed !important; left: 0 !important; top: 0 !important;
   display: block !important; z-index: 10 !important;
   width: 100vw !important;
@@ -57,6 +58,7 @@ canvas {
   min-width: 0 !important; min-height: 0 !important;
   margin: 0 !important; padding: 0 !important;
   object-fit: fill !important; touch-action: none !important;
+  pointer-events: auto !important;
 }
 #rotate-msg {
   display: none; position: fixed; inset: 0; z-index: 2147483647;
@@ -81,12 +83,15 @@ if 'id="solitaire-viewport-css"' not in html:
     html = html.replace("</head>", head + "\n</head>", 1)
 if 'id="rotate-msg"' not in html:
     html = html.replace("</body>", body + "\n</body>", 1)
+# Pointer bridge runs on the actual SDL canvas, never the unused 3D canvas.
+# It also maps CSS coordinates to Pygame logical pixels in main.py.
+html = html.replace("</body>", '<script src="./pointer_bridge.js" defer></script>\\n</body>', 1)
 index.write_text(html, encoding="utf-8")
 
 precache = ["./" + p.name for p in web.iterdir()
             if p.is_file() and p.suffix.lower() in
             (".html", ".js", ".wasm", ".data", ".apk", ".zip", ".png", ".webmanifest")]
-worker = """const CACHE = 'solitaire-v1.4.0';
+worker = """const CACHE = 'solitaire-v1.4.1';
 const FILES = __FILES__;
 self.addEventListener('install', event => event.waitUntil((async () => {
   const cache = await caches.open(CACHE);
