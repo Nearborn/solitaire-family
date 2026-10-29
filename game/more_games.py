@@ -5,6 +5,7 @@ objects are the immutable card value and the sprite-based UI primitives.
 """
 import copy
 import random
+from .entropy import fresh_seed
 from .extra_games import Card, standard_deck
 
 MORE_GAMES = ("Golf", "TriPeaks", "Relaxed Pyramid", "Scorpion II")
@@ -41,7 +42,7 @@ class MoreGame:
         if name not in MORE_GAMES:
             raise ValueError('Unknown additional game: ' + name)
         self.name = name
-        self.rng = random.Random(seed)
+        self.rng = random.Random(fresh_seed() if seed is None else seed)
         self.blockers = _blockers(name)
         self.new_game()
 
