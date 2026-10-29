@@ -51,7 +51,6 @@ class SolitaireGame:
         if self.layout is not None and (width, height) == (self.layout.width, self.layout.height):
             self.screen = screen
             return
-        old_card_width = self.layout.card_width if self.layout is not None else None
         self.screen = screen
         variant = self.current_variant
         if self.special is not None:
@@ -63,8 +62,9 @@ class SolitaireGame:
             layout = Layout(width, height, variant)
             self.drag = Drag(layout)
         self.layout = layout
-        if self.art is None or old_card_width != layout.card_width:
-            self.art = Art(layout.card_width, layout.card_height)
+        # set_mode() may recreate the browser display surface; re-convert
+        # sprites even when the card dimensions stay unchanged.
+        self.art = Art(layout.card_width, layout.card_height)
         self.painter = Painter(screen, layout, self.art)
         self.pressed = None
         self.pressed_row = None
