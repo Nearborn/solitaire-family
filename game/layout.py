@@ -1,5 +1,6 @@
 """Turning the canvas into a table. Everything comes from the size `set_mode` returns and from the rule set's column count, so a `Layout` is measured per deal."""
 import pygame
+import sys
 
 from .rules import KLONDIKE
 from .table import STOCK, WASTE, foundation
@@ -9,9 +10,10 @@ CARD_ART_HEIGHT = 60
 MIN_CARD_WIDTH = CARD_ART_WIDTH  # a tiny canvas still gets a table
 
 # The app's buttons sit across the top of the screen; nothing is drawn under them.
-CHROME_BAND = 180
-CHROME_LEADING = 180
-CHROME_TRAILING = 348
+IS_WEB = sys.platform == 'emscripten'
+CHROME_BAND = 104 if IS_WEB else 180
+CHROME_LEADING = 12 if IS_WEB else 180
+CHROME_TRAILING = 12 if IS_WEB else 348
 
 # Everything below is a length in the 42 x 60 box, and goes through `scaled`.
 COLUMN_GAP = 10
