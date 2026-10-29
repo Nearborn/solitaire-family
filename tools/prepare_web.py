@@ -39,6 +39,16 @@ head = """<meta name="viewport" content="width=device-width,initial-scale=1,view
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <link rel="manifest" href="./manifest.webmanifest">
 <link rel="icon" href="./favicon.png">
+<script id="solitaire-entropy">
+/* A fresh 128-bit browser-entropy seed for every Solitaire deal.
+   Pygbag's WebAssembly runtime does not consistently auto-seed random.Random. */
+window.solitaireDealSeed = function () {
+  const values = new Uint32Array(4);
+  globalThis.crypto.getRandomValues(values);
+  return Array.from(values, v => v.toString(16).padStart(8, '0')).join('');
+};
+window.solitaireLastDealSeed = null;
+</script>
 <style id="solitaire-viewport-css">
 /* Pygbag's default CSS caps the portrait-sized canvas but never enlarges it.
    Fill the browser viewport instead. Python resizes the actual framebuffer. */
@@ -91,7 +101,7 @@ index.write_text(html, encoding="utf-8")
 precache = ["./" + p.name for p in web.iterdir()
             if p.is_file() and p.suffix.lower() in
             (".html", ".js", ".wasm", ".data", ".apk", ".zip", ".png", ".webmanifest")]
-worker = """const CACHE = 'solitaire-v1.4.1';
+worker = """const CACHE = 'solitaire-v1.4.2';
 const FILES = __FILES__;
 self.addEventListener('install', event => event.waitUntil((async () => {
   const cache = await caches.open(CACHE);
