@@ -69,6 +69,11 @@ jobs:
                   print(term,at,repr(html[max(0,at-180):at+250]))
                   at+=len(term)
           PY
+      - name: Smoke-test real browser mouse clicks
+        run: |
+          python -m pip install playwright
+          python tests/smoke_browser.py
+        timeout-minutes: 3
       - uses: actions/upload-pages-artifact@v4
         with:
           path: build/web
