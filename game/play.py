@@ -41,6 +41,43 @@ class SolitaireGame:
         self.rules_open = False
         self.new_game()
 
+    def resize_display(self, screen):
+        """Resize the board without redealing or discarding the undo history.
+
+        Browser viewport changes invalidate sprite scaling and card hit regions;
+        transient drags/animations are cancelled, not the underlying game model.
+        """
+        width, height = screen.get_size()
+        if self.layout is not None and (width, height) == (self.layout.width, self.layout.height):
+            self.screen = screen
+            return
+        old_card_width = self.layout.card_width if self.layout is not None else None
+        self.screen = screen
+        variant = self.current_variant
+        if self.special is not None:
+            layout = (more_layout(width, height, variant)
+                      if variant.name in MORE_GAMES
+                      else special_layout(width, height, variant))
+            self.special.selected = None
+        else:
+            layout = Layout(width, height, variant)
+            self.drag = Drag(layout)
+        self.layout = layout
+        if self.art is None or old_card_width != layout.card_width:
+            self.art = Art(layout.card_width, layout.card_height)
+        self.painter = Painter(screen, layout, self.art)
+        self.pressed = None
+        self.pressed_row = None
+        self.deal = self.homing = self.snap_back = self.turning = None
+        self.notice = None
+        if self.state == CASCADE:
+            self.state = WON
+        elif self.state == DEALING:
+            self.state = PLAYING
+        self.cascade = None
+        self.cascade_painted = False
+        self.won_background = None
+
     # -- starting over --
 
     def new_game(self, variant=None):
