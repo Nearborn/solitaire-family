@@ -3,6 +3,7 @@
 Nothing here changes except through a `Transfer` or a `Flip`, and each can say what its own opposite is. An action is a LIST of moves, which lets a rule set do something big in one undoable step.
 """
 from .cards import new_deck
+from .entropy import fresh_rng
 from .rules import KLONDIKE
 
 # A pile is named by a (kind, number) pair, so it can be passed about without knowing where it is drawn.
@@ -87,7 +88,8 @@ class Table:
             self.variant = variant
         variant = self.variant
         deal = variant.deal
-        deck = new_deck(rng, suits=variant.suits, copies=variant.copies)
+        deck = new_deck(rng if rng is not None else fresh_rng(),
+                        suits=variant.suits, copies=variant.copies)
         self.foundations = [[] for _ in range(variant.foundation_count)]
         self.columns = [[] for _ in range(variant.column_count)]
         self.waste = []
