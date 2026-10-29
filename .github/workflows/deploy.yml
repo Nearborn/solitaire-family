@@ -44,6 +44,27 @@ jobs:
         run: |
           grep -q 'solitaire-viewport-css' build/web/index.html
           grep -q 'solitaire-v1.4.0' build/web/sw.js
+      - name: Inspect generated browser layers and input handlers
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          from html.parser import HTMLParser
+          class Nodes(HTMLParser):
+              def handle_starttag(self, tag, attrs):
+                  if tag in ('canvas','div','button','style','meta','script'):
+                      a=dict(attrs)
+                      print(tag, {k:v for k,v in a.items() if k in ('id','class','style','name','src','type')})
+          html = Path('build/web/index.html').read_text(encoding='utf-8')
+          print('HTML BYTES',len(html))
+          Nodes().feed(html)
+          for term in ('canvas','pythons','pointer-events','onmousedown','onclick','event.button','isPlaying','wasm'):
+              at=0
+              for i in range(5):
+                  at=html.find(term,at)
+                  if at<0: break
+                  print(term,at,repr(html[max(0,at-180):at+250]))
+                  at+=len(term)
+          PY
       - uses: actions/upload-pages-artifact@v4
         with:
           path: build/web
