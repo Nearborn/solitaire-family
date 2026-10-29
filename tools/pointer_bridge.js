@@ -25,8 +25,16 @@
     const opts = {capture: true, passive: false};
     canvas.style.touchAction = "none";
 
-    canvas.addEventListener("pointerdown", e => {
-      if (active !== null || e.button > 0) return;
+    function withinCanvas(e) {
+      const rect = canvas.getBoundingClientRect();
+      return rect.width > 0 && rect.height > 0 &&
+        e.clientX >= rect.left && e.clientX <= rect.right &&
+        e.clientY >= rect.top && e.clientY <= rect.bottom;
+    }
+    // Capture at document level: Pygbag may place an invisible SDL overlay
+    // above its 2D canvas. The event must still reach the game, not the overlay.
+    document.addEventListener("pointerdown", e => {
+      if (active !== null || e.button > 0 || !withinCanvas(e)) return;
       active = e.pointerId;
       try { canvas.setPointerCapture(e.pointerId); } catch (_) {}
       enqueue("down", e);
@@ -34,7 +42,7 @@
       e.stopImmediatePropagation();
     }, opts);
 
-    canvas.addEventListener("pointermove", e => {
+    document.addEventListener("pointermove", e => {
       if (active !== null && e.pointerId === active) {
         enqueue("move", e);
         e.preventDefault();
@@ -50,8 +58,8 @@
       e.preventDefault();
       e.stopImmediatePropagation();
     };
-    canvas.addEventListener("pointerup", release, opts);
-    canvas.addEventListener("pointercancel", release, opts);
+    document.addEventListener("pointerup", release, opts);
+    document.addEventListener("pointercancel", release, opts);
     window.solitairePointerReady = true;
   }
 
