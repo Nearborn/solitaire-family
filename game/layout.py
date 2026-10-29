@@ -11,7 +11,7 @@ MIN_CARD_WIDTH = CARD_ART_WIDTH  # a tiny canvas still gets a table
 
 # The app's buttons sit across the top of the screen; nothing is drawn under them.
 IS_WEB = sys.platform == 'emscripten'
-CHROME_BAND = 104 if IS_WEB else 180
+CHROME_BAND = 78 if IS_WEB else 180
 CHROME_LEADING = 12 if IS_WEB else 180
 CHROME_TRAILING = 12 if IS_WEB else 348
 
@@ -44,7 +44,7 @@ MIN_FAN = 2
 BUTTON_BAND_FRACTION = 1, 2  # of the chrome band's height
 BUTTON_ASPECT = 8, 5
 VARIANT_BUTTON_ASPECT = 3, 1  # wider: a name, four dots and the arrow
-MIN_BUTTON_HEIGHT = 40
+MIN_BUTTON_HEIGHT = 38 if IS_WEB else 40
 
 PICKER_ROW_ASPECT = 5  # plate-heights across
 PICKER_PADDING_DIVISOR = 10
