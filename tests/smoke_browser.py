@@ -76,6 +76,25 @@ def main():
                 "Browser input failed: tapping Rules did not change rendered game."
                 " Check JavaScript console and event bridge.")
             print("Actual WebAssembly browser click smoke test passed.")
+            # A true full reload must get a new deck seed, not the deterministic
+            # WebAssembly random state from the previous browser page.
+            page.wait_for_function(
+                "typeof window.solitaireLastDealSeed === 'string' && "
+                "window.solitaireLastDealSeed.length === 32",
+                timeout=45000
+            )
+            previous_seed = page.evaluate("window.solitaireLastDealSeed")
+            page.reload(wait_until="domcontentloaded", timeout=50000)
+            page.wait_for_function(
+                "typeof window.solitaireLastDealSeed === 'string' && "
+                "window.solitaireLastDealSeed.length === 32",
+                timeout=45000
+            )
+            current_seed = page.evaluate("window.solitaireLastDealSeed")
+            print("Deal seeds are distinct after reload:", previous_seed != current_seed)
+            assert current_seed != previous_seed, (
+                "WebAssembly game reuses the same shuffle seed after page reload"
+            )
             browser.close()
     finally:
         server.shutdown()
