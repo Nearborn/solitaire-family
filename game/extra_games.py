@@ -5,6 +5,8 @@ from dataclasses import dataclass
 import copy
 import random
 
+from .entropy import fresh_seed
+
 from .rules import EXTRA_FAMILY_GAMES
 
 SUIT_MARKS = ("♠", "♥", "♦", "♣")
@@ -49,7 +51,7 @@ class ExtraGame:
         if name not in EXTRA_FAMILY_GAMES:
             raise ValueError("Unknown game: %r" % name)
         self.name = name
-        self.rng = random.Random(seed)
+        self.rng = random.Random(fresh_seed() if seed is None else seed)
         self.history = []
         self.new_game()
 
