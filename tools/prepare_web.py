@@ -85,7 +85,7 @@ if 'id="rotate-msg"' not in html:
     html = html.replace("</body>", body + "\n</body>", 1)
 # Pointer bridge runs on the actual SDL canvas, never the unused 3D canvas.
 # It also maps CSS coordinates to Pygame logical pixels in main.py.
-html = html.replace("</body>", '<script src="./pointer_bridge.js" defer></script>\\n</body>', 1)
+html = html.replace("</body>", '<script src="./pointer_bridge.js" defer></script>\n</body>', 1)
 index.write_text(html, encoding="utf-8")
 
 precache = ["./" + p.name for p in web.iterdir()
