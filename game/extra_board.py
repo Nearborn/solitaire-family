@@ -7,7 +7,7 @@ The original Table, Drag and Flight implementations are not modified.
 import pygame
 
 from .extra_games import ExtraGame
-from .layout import CHROME_BAND, CHROME_TRAILING, Layout
+from .layout import CHROME_BAND, CHROME_LEADING, CHROME_TRAILING, Layout
 from .paint import COLOR_TABLE, COLOR_TEXT
 
 HIGHLIGHT = (255, 207, 64)
@@ -42,7 +42,7 @@ def special_layout(width, height, variant):
         # Addiction alone has a fifth toolbar control. Reflow all FIVE plates
         # in the original protected toolbar corridor; the old approach put
         # Shuffle beneath the large Juno CLOSE button and status banner.
-        available = max(1, width - 180 - CHROME_TRAILING)
+        available = max(1, width - CHROME_LEADING - CHROME_TRAILING)
         def span(height):
             return 4 * (height * 8 // 5) + 3 * height + 4 * (height // 2)
         button_h = lay.undo_button.height
@@ -50,7 +50,7 @@ def special_layout(width, height, variant):
             button_h -= 1
         button_w = button_h * 8 // 5
         space = button_h // 2
-        left = 180 + max(0, (available - span(button_h)) // 2)
+        left = CHROME_LEADING + max(0, (available - span(button_h)) // 2)
         top = (CHROME_BAND - button_h) // 2
         lay.undo_button = pygame.Rect(left, top, button_w, button_h)
         left += button_w + space
