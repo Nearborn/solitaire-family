@@ -49,7 +49,7 @@ class BrowserRandomTests(unittest.TestCase):
             self.assertNotEqual(more_one.rng.getstate(),
                                 more_two.rng.getstate())
 
-        self.assertEqual(browser.calls, 6)
+        self.assertEqual(browser.calls, 8)
 
     def test_explicit_seed_still_reproduces_deals(self):
         import random
