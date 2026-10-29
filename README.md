@@ -1,4 +1,4 @@
-# Solitaire — eighteen games
+> **Android and iPhone web edition:** [Play Solitaire Collection](https://nearborn.github.io/solitaire-family/) — free, ad-free and installable from your browser. On a phone, turn the device **landscape**. On Android Chrome choose *Install app* / *Add to Home screen*; on iPhone Safari use *Share → Add to Home Screen*. No Python environment is required.\n>\n> **Mobile layout update (29 October 2026):** Browser viewport-aware canvas scaling, rotation without losing the current game, and refreshed offline caching. Device compatibility is still being verified.\n>\n> **Desktop / Juno:** Continue to run `solitaire.py`. The web entry point is `main.py`; GitHub Pages builds with Pygbag automatically.\n\n---\n\n# Solitaire — eighteen games
 
 `solitaire.py` is an eighteen-game patience collection. Open it in Juno and press Run. Version 1.2 adds six more variants, a properly positioned Shuffle control in Addiction, and a two-column game chooser that retains the original UI style.
 
