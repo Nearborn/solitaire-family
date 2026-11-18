@@ -14,6 +14,7 @@ import zlib
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT))  # import project packages when launched from tools/
 PARTS = [ROOT / "tools" / f"_juno24_source_{i}.b64" for i in range(1, 4)]
 EXPECTED_HASH = "a2380e4fbff029baab63ebb0ab136075ca0adc3708c99f1b0a0d3e67efde6b15"
 EXPECTED_FILES = {
