@@ -1,10 +1,36 @@
-> **Android and iPhone web edition:** [Play Solitaire Collection](https://nearborn.github.io/solitaire-family/) — free, ad-free and installable from your browser. On a phone, turn the device **landscape**. On Android Chrome choose *Install app* / *Add to Home screen*; on iPhone Safari use *Share → Add to Home Screen*. No Python environment is required.\n>\n> **Mobile layout update (29 October 2026):** Browser viewport-aware canvas scaling, rotation without losing the current game, and refreshed offline caching. Device compatibility is still being verified.\n>\n> **Desktop / Juno:** Continue to run `solitaire.py`. The web entry point is `main.py`; GitHub Pages builds with Pygbag automatically.\n\n---\n\n# Solitaire — eighteen games
+> **Family Web Edition — 24 Games:** [Play Solitaire on any phone, tablet or PC](https://nearborn.github.io/solitaire-family/). Turn phones sideways; install from Safari Share → Add to Home Screen or Chrome's Install app option. Free, no ads, no Python installation. The app is built automatically with Pygbag using `main.py`. Desktop/Juno users should continue to run `solitaire.py`.
+>
+> Web-specific capabilities: touch and mouse input bridge, responsive landscape layout, browser-crypto shuffled decks, PWA cache and installation manifest. See `CHANGELOG_v1_3.md` for the new Juno rules and game variants.
 
-`solitaire.py` is an eighteen-game patience collection. Open it in Juno and press Run. Version 1.2 adds six more variants, a properly positioned Shuffle control in Addiction, and a two-column game chooser that retains the original UI style.
+---
+
+# Solitaire — twenty-four games
+
+`solitaire.py` is a twenty-four-game patience collection. Open it in Juno and press Run. Version 1.3 adds Black Hole, Zodiac, Gargantua, Beetle, Birthday and Beleaguered Castle. It also makes FreeCell supermove refusals explain the actual capacity limit, and corrects top-row spacing when a game has more foundation/stock slots than tableau columns.
 
 There is no clock, no score and nothing chasing you: every move can be taken back, and the game waits for as long as you like between them.
 
 It does not fit in one file. `solitaire.py` is the way in and the file to Run; the game itself is the `game` folder beside it — `cards.py`, `rules.py`, `table.py`, `layout.py`, `sheet.py`, `sounds.py`, `motion.py`, `drag.py`, `paint.py` and `play.py`, which is the object all of them are assembled into. `assets` holds one card sheet and twelve recordings.
+
+
+## Version 1.3 — six more games
+
+The six additions use the original card sprites, toolbar, same undo/new/rules/menu controls, and click-or-drag interaction. The original eighteen games remain available.
+
+- **Black Hole:** Place the Ace of Spades at the centre and deal seventeen fans of three cards. Tap an exposed fan card to add it to the single foundation when its rank is adjacent to the current foundation card. King wraps to Ace; suits are ignored. Empty all seventeen fans.
+- **Zodiac:** Two 52-card decks. Eight cards occupy the Equator cells, twenty-four cards start the Zodiac tableau, and the other seventy-two are in stock. During Phase 1, build on the Zodiac in suit, ascending *or* descending (no Ace/King wrap), using an Equator card or the top of waste. Play waste into empty Equator cells. Zodiac piles are locked until all stock and waste cards have been packed. Stock has unlimited redeals. During Phase 2, expose cards from the Equator/Zodiac to fill eight foundations: four ascend A–K in suit, four descend K–A in suit.
+- **Gargantua:** Double-deck Klondike with nine tableau columns and eight suit foundations. Stock deals one card and is limited to **two total passes** (one recycle). Tableau rules are normal Klondike.
+- **Beetle:** Double-deck Spider-family game. Deal 44 cards **face up** across ten columns, leaving 60 cards in stock. Build down in any suit; only same-suit descending groups can be carried as a unit. Clear eight King-to-Ace suit runs. All ten tableau columns must contain a card to deal a stock row.
+- **Birthday (Der Geburtstag):** German one-deck birthday patience. The configurable example target is **1956**, creating four foundation bases 2♠, 10♥, 6♦, 7♣. Draw one to waste, then build foundations upward in suit, wrapping from King to Ace; you have **four stock passes**. This is the *four-digit-target* ruleset, not the unrelated random shared-base variant found on some websites. Change `BIRTHDAY_TARGET` near the top of `game/novel_games.py` to any four-digit target **without zeroes**.
+- **Beleaguered Castle:** Remove the four Aces to the foundations, deal the remaining 48 cards into eight columns of six. Move one exposed card at a time onto a card one rank higher regardless of suit. Empty columns take any card. Foundations build up in suit from Ace to King.
+
+### FreeCell explanation
+
+Standard FreeCell allows the game to transport a correctly ordered sequence using only the available temporary storage. With **F** empty free cells and **E** otherwise empty tableau columns, the maximum number of cards moved to an occupied column is **(F + 1) × 2^E**. An empty destination does **not** also count as storage. For instance, one empty cell and no empty columns permit a 2-card group, but not a 3- or 7-card group. The two screenshots supplied with the v1.3 bug report both showed longer sequences, so the refused moves were *correct* under standard FreeCell rules; the unhelpful generic refusal message was not. The engine now explains the capacity restriction instead of obscuring it.
+
+### Running regression tests
+
+From the `Solitaire` folder, run `python -m unittest discover -s tests -v`. Model tests use only the Python standard library and do not require Juno/Pygame. Interactive gameplay still requires Pygame (already provided in Juno). The suite covers the original games plus the new deals, win checks, stock passes, model reversibility, card totals, and FreeCell sequence limits.
 
 ## The original six games
 

@@ -70,8 +70,13 @@ class Layout:
                           + ([WASTE] if variant.has_waste else [])
                           + [foundation(index) for index in range(self.foundation_count)])
 
+        # A nine-column game such as Gargantua has ten top-row piles
+        # (stock, waste, eight foundations). Give the row its own pitch,
+        # rather than letting the waste overlap the first foundation.
+        self.row_slot_count = max(self.column_count, len(self.row_piles))
+        self.first_foundation_column = self.row_slot_count - self.foundation_count
         # The largest card that fits both ways — any width, not a whole multiple.
-        self.row_art_width = row_art_width(self.column_count)
+        self.row_art_width = row_art_width(self.row_slot_count)
         across = width * CARD_ART_WIDTH // self.row_art_width
         down = (height - CHROME_BAND) * CARD_ART_WIDTH // TABLE_ART_HEIGHT
         self.card_width = max(MIN_CARD_WIDTH, min(across, down))
@@ -86,6 +91,13 @@ class Layout:
         row_width = (self.column_count * self.card_width
                      + (self.column_count - 1) * self.column_gap)
         self.left = (width - row_width) // 2
+        row_extra = max(0, width - self.row_slot_count * self.card_width)
+        self.row_gap = min(row_extra // (self.row_slot_count + 1),
+                           self.card_width * MAX_COLUMN_GAP_NUMERATOR
+                           // MAX_COLUMN_GAP_DENOMINATOR)
+        self.row_pitch = self.card_width + self.row_gap
+        self.row_left = (width - self.row_slot_count * self.card_width -
+                         (self.row_slot_count - 1) * self.row_gap) // 2
 
         self.row_top = CHROME_BAND + self.scaled(TOP_GAP)
         self.tableau_top = self.row_top + self.card_height + self.scaled(ROW_GAP)
@@ -222,7 +234,7 @@ class Layout:
                            self.card_width, self.card_height)
 
     def _row_rect(self, index):
-        return pygame.Rect(self.column_left(index), self.row_top,
+        return pygame.Rect(self.row_left + index * self.row_pitch, self.row_top,
                            self.card_width, self.card_height)
 
     def fan_offsets(self, cards):

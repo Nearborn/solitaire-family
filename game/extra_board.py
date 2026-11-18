@@ -109,7 +109,8 @@ class SpecialBoard:
         screen.blit(surf, rect)
         if card is None and ref is not None and ref[0] in ("c", "f", "t", "p", "w", "stock"):
             if ref[0] == "c":
-                caption = "FLIP" if self.model.is_penguin else "FREE"
+                caption = ("FLIP" if self.model.is_penguin else
+                           "EQUATOR" if self.model.name == "Zodiac" else "FREE")
             elif ref[0] == "f":
                 caption = "HOME"
             elif ref[0] == "stock":
@@ -296,9 +297,18 @@ class SpecialBoard:
             # This strip sits between the toolbar and the grid: never
             # cover the bottom row of cards on a phone-sized screen.
             screen.blit(surface, surface.get_rect(center=(w // 2, CHROME_BAND - 18)))
-        if m.message and not m.is_won() and not m.is_grid:
+        status = m.message
+        if m.name == "FreeCell" and not status:
+            free = sum(card is None for card in m.cells)
+            empty = sum(not pile for pile in m.tableau)
+            capacity = (free + 1) * 2 ** empty
+            status = (f"Free cells: {free}  |  Empty columns: {empty}  |  "
+                      f"Max run to occupied column: {capacity}")
+        if status and not m.is_won() and not m.is_grid:
             font = pygame.font.Font(None, max(19, min(30, h // 28)))
-            img = font.render(m.message[:90], True, COLOR_TEXT)
+            img = font.render(status[:120], True, COLOR_TEXT)
+            if img.get_width() > w - 24:
+                img = pygame.transform.smoothscale(img, (w - 24, img.get_height()))
             r = img.get_rect(center=(w // 2, min(h - 22, layout.tableau_top - 13 if not m.is_grid else h - 24)))
             shade = pygame.Surface((r.width + 25, r.height + 8), pygame.SRCALPHA)
             shade.fill((8, 48, 34, 220))
@@ -350,9 +360,11 @@ class SpecialBoard:
         if self.dragging:
             self.dragging = False
             self.selected = None
+            m.message = ""
             if target and m.move(source, target):
                 return "move"
-            m.message = "That move is not allowed"
+            if not m.message:
+                m.message = "That move is not allowed"
             return None
         self.dragging = False
         if m.is_grid:
@@ -390,7 +402,9 @@ class SpecialBoard:
                 m.message = ("Tap a highlighted gap" if destinations else
                              "This card has no legal gap")
             return None
-        if self.selected is not None and target is not None and target != self.selected:
+        attempted = self.selected is not None and target is not None and target != self.selected
+        if attempted:
+            m.message = ""  # remove stale error before model returns the new reason
             if m.move(self.selected, target):
                 self.selected = None
                 return "move"
@@ -400,7 +414,8 @@ class SpecialBoard:
             return "move" if m.move_home(source) else None
         if m.movable(source):
             self.selected = source
-            m.message = ""
+            if not attempted:
+                m.message = ""
         elif target and target[0] in ("f", "c", "t", "g"):
             # Keep selected card when tapping destination empty slot (handled above).
             pass

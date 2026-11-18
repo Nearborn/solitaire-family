@@ -15,7 +15,7 @@ for name in ("favicon.png", "icon-192.png", "icon-512.png"):
     copyfile(root / name, web / name)
 
 manifest = {
-    "name": "Solitaire Collection — 18 Games",
+    "name": "Solitaire Collection — 24 Games",
     "short_name": "Solitaire",
     "id": "./", "start_url": "./index.html", "scope": "./",
     "display": "standalone", "orientation": "landscape",
@@ -101,7 +101,7 @@ index.write_text(html, encoding="utf-8")
 precache = ["./" + p.name for p in web.iterdir()
             if p.is_file() and p.suffix.lower() in
             (".html", ".js", ".wasm", ".data", ".apk", ".zip", ".png", ".webmanifest")]
-worker = """const CACHE = 'solitaire-v1.4.2';
+worker = """const CACHE = 'solitaire-v1.5.0';
 const FILES = __FILES__;
 self.addEventListener('install', event => event.waitUntil((async () => {
   const cache = await caches.open(CACHE);

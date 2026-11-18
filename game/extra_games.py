@@ -4,7 +4,6 @@ The six original Variant and Table rules remain untouched.
 from dataclasses import dataclass
 import copy
 import random
-
 from .entropy import fresh_seed
 
 from .rules import EXTRA_FAMILY_GAMES
@@ -261,6 +260,17 @@ class ExtraGame:
             return [self.grid[pile]] if self.grid[pile] is not None else None
         return None
 
+    def supermove_capacity(self, source_column, destination_column):
+        """Maximum sequence length reachable via single-card moves.
+
+        Free cells and *other* empty columns are temporary parking spaces.
+        An empty destination cannot simultaneously count as workspace.
+        """
+        free = sum(card is None for card in self.cells)
+        empty = sum(not pile for i, pile in enumerate(self.tableau)
+                    if i not in (source_column, destination_column))
+        return (free + 1) * (2 ** empty)
+
     def movable(self, src):
         return self._source(src) is not None
 
@@ -379,16 +389,11 @@ class ExtraGame:
                         or cards[0].rank != top.rank - 1):
                     return False
             if self.is_freecell and len(cards) > 1:
-                other_empty = sum(not pile for i, pile in enumerate(self.tableau)
-                                  if i != target_i and i != source_i)
-                # An empty destination is consumed, so may not act as workspace.
-                if target_i != source_i and self.tableau[target_i]:
-                    # All other empty piles may act as workspace.
-                    other_empty = sum(not pile for i, pile in enumerate(self.tableau)
-                                      if i != source_i)
-                capacity = (sum(c is None for c in self.cells) + 1) * (2 ** other_empty)
+                capacity = self.supermove_capacity(
+                    source_i if source_kind == "t" else -1, target_i)
                 if len(cards) > capacity:
-                    self.message = "Not enough free cells / empty columns"
+                    self.message = (f"Need capacity for {len(cards)} cards; "
+                                    f"only {capacity} movable (free cells/empty columns)")
                     return False
         else:
             return False

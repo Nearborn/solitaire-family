@@ -13,6 +13,8 @@ from .rules import KLONDIKE, VARIANTS, SPECIAL_VARIANTS, SpecialVariant
 from .extra_board import SpecialBoard, special_layout
 from .more_games import MORE_GAMES
 from .more_board import MoreBoard, more_layout
+from .novel_games import NOVEL_GAMES
+from .novel_board import NovelBoard, novel_layout
 from .sheet import Art
 from .sounds import Sounds
 from .table import (STOCK, Flip, Table, Transfer, column, deal_from_stock,
@@ -26,7 +28,7 @@ WON = "won"
 
 
 class SolitaireGame:
-    """One table, one finger, eighteen rule sets to choose from and four states to be in."""
+    """One table, one finger, twenty-four rule sets and four states."""
 
     variants = VARIANTS + SPECIAL_VARIANTS
 
@@ -44,8 +46,8 @@ class SolitaireGame:
     def resize_display(self, screen):
         """Resize the board without redealing or discarding the undo history.
 
-        Browser viewport changes invalidate sprite scaling and card hit regions;
-        transient drags/animations are cancelled, not the underlying game model.
+        Browser viewport changes invalidate sprite scaling and hit regions;
+        transient drags/animations are cancelled, not the game model.
         """
         width, height = screen.get_size()
         if self.layout is not None and (width, height) == (self.layout.width, self.layout.height):
@@ -55,15 +57,21 @@ class SolitaireGame:
         variant = self.current_variant
         if self.special is not None:
             layout = (more_layout(width, height, variant)
-                      if variant.name in MORE_GAMES
-                      else special_layout(width, height, variant))
+                      if variant.name in MORE_GAMES else
+                      novel_layout(width, height, variant)
+                      if variant.name in NOVEL_GAMES else
+                      special_layout(width, height, variant))
             self.special.selected = None
+            self.special.press_ref = None
+            self.special.press_xy = None
+            self.special.pointer_xy = None
+            self.special.dragging = False
         else:
             layout = Layout(width, height, variant)
             self.drag = Drag(layout)
         self.layout = layout
-        # set_mode() may recreate the browser display surface; re-convert
-        # sprites even when the card dimensions stay unchanged.
+        # The WebAssembly renderer may replace the display when rotating,
+        # so regenerate all pre-scaled card sprites after a framebuffer reset.
         self.art = Art(layout.card_width, layout.card_height)
         self.painter = Painter(screen, layout, self.art)
         self.pressed = None
@@ -86,6 +94,7 @@ class SolitaireGame:
         self.rules_open = False
         if isinstance(variant, SpecialVariant):
             self.special = (MoreBoard(variant.name) if variant.name in MORE_GAMES
+                            else NovelBoard(variant.name) if variant.name in NOVEL_GAMES
                             else SpecialBoard(variant.name))
             self.special_variant = variant
             self.special_won = False
@@ -93,6 +102,8 @@ class SolitaireGame:
             previous_card_width = self.layout.card_width if self.layout is not None else None
             self.layout = (more_layout(width, height, variant)
                            if variant.name in MORE_GAMES
+                           else novel_layout(width, height, variant)
+                           if variant.name in NOVEL_GAMES
                            else special_layout(width, height, variant))
             if self.art is None or self.layout.card_width != previous_card_width:
                 self.art = Art(self.layout.card_width, self.layout.card_height)

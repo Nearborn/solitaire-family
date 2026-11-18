@@ -42,7 +42,7 @@ QUICK_RULES = {
     "FreeCell": (
         "Build down in alternating colours; any card fills an empty column.",
         "Four free cells each hold just one card.",
-        "Move a whole run only if empty cells/columns can support it.",
+        "Max run = (free cells + 1) x 2^(other empty columns).",
         "Move all cards to Ace-to-King foundations by suit.",
     ),
     "Penguin": (
@@ -110,5 +110,41 @@ QUICK_RULES = {
         "Fill a gap with the next card in suit on its left OR prior on right.",
         "After a Queen, any Ace may follow; nothing goes before an Ace.",
         "Make four complete A-to-Q suit sequences around the grid.",
+    ),
+    "Gargantua": (
+        "Two decks, nine Klondike columns and eight suit foundations.",
+        "Build down in alternating colours; only Kings fill empty columns.",
+        "Move face-up ordered runs; uncover buried cards as in Klondike.",
+        "Stock draws one; TWO passes through stock in total (one recycle).",
+    ),
+    "Beetle": (
+        "Two decks: 44 face-up cards in ten columns; 60 in stock.",
+        "Build down regardless of suit; only same-suit runs move together.",
+        "Empty columns take any card/run; fill all before dealing a new row.",
+        "Remove eight complete same-suit King-to-Ace runs to win.",
+    ),
+    "Black Hole": (
+        "Ace of Spades starts one foundation; 17 fans of three cards.",
+        "Tap any fan's exposed card to play it to the Black Hole.",
+        "Each card must be one rank higher or lower; suits do not matter.",
+        "Ace and King are adjacent. Move all 52 cards to win.",
+    ),
+    "Zodiac": (
+        "Two decks, 24 Zodiac piles and eight one-card Equator cells.",
+        "PHASE 1: use stock/waste and Equator to build Zodiac up/down in suit.",
+        "Zodiac cards cannot be moved in Phase 1; unlimited waste redeals.",
+        "PHASE 2: with stock/waste empty, build four A-up and four K-down suits.",
+    ),
+    "Birthday": (
+        "German Der Geburtstag: preset target 1956 (editable in novel_games.py).",
+        "Four base cards are 2, 10, 6 and 7 (one in each suit).",
+        "Play waste to foundations in rising suit order, wrapping King to Ace.",
+        "Four stock passes total; clear all 52 cards to win.",
+    ),
+    "Beleaguered Castle": (
+        "Four Aces begin foundations; eight six-card tableau rows.",
+        "Only a row's exposed top card can move (one card at a time).",
+        "Build tableau downward by rank, regardless of suit.",
+        "Empty rows accept any card; build suit foundations Ace to King.",
     ),
 }

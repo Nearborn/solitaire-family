@@ -178,6 +178,15 @@ def recycle_waste(table):
     """Only offered once the stock is empty, which makes going round again deliberate."""
     if not table.variant.has_waste or table.stock or not table.waste:
         return None
+    max_passes = table.variant.stock.max_passes
+    if max_passes is not None:
+        # Count actual performed recycling actions in the undo log. Undo thereby
+        # restores a pass automatically, without any independent counter.
+        recycled = sum(any(isinstance(m, Transfer) and m.source == WASTE
+                           and m.destination == STOCK for m in action)
+                       for action in table.history)
+        if recycled >= max_passes - 1:
+            return None
     return [Transfer(WASTE, STOCK, len(table.waste),
                      face_up=False, face_up_before=True, turned_over=True)]
 

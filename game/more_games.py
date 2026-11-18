@@ -50,6 +50,12 @@ class MoreGame:
     def is_addiction(self): return False
 
     @property
+    def is_penguin(self): return False
+
+    @property
+    def is_tommy(self): return False
+
+    @property
     def is_golf(self): return self.name == 'Golf'
     @property
     def is_tripeaks(self): return self.name == 'TriPeaks'

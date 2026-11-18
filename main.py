@@ -67,7 +67,7 @@ def browser_pointer_events(screen):
 async def main():
     pygame.init()
     screen = pygame.display.set_mode(viewport_size())
-    pygame.display.set_caption("Solitaire - 18 Games")
+    pygame.display.set_caption("Solitaire - 24 Games")
     clock = pygame.time.Clock()
     game = SolitaireGame(screen)
     game.draw()

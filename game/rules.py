@@ -79,11 +79,12 @@ def a_finished_run(cards, top):
 class Stock:
     """A tap does nothing, turns `to_waste` cards onto the waste, or deals one face up to every column."""
 
-    __slots__ = ("to_waste", "across_the_columns")
+    __slots__ = ("to_waste", "across_the_columns", "max_passes")
 
-    def __init__(self, to_waste=0, across_the_columns=False):
+    def __init__(self, to_waste=0, across_the_columns=False, max_passes=None):
         self.to_waste = to_waste
         self.across_the_columns = across_the_columns
+        self.max_passes = max_passes
 
     @property
     def deals_anything(self):
@@ -97,6 +98,7 @@ class Stock:
 NO_STOCK = Stock()
 TURN_ONE_OVER = Stock(to_waste=1)
 TURN_THREE_OVER = Stock(to_waste=3)
+GARGANTUA_STOCK = Stock(to_waste=1, max_passes=2)
 DEAL_ACROSS_THE_COLUMNS = Stock(across_the_columns=True)
 
 
@@ -139,6 +141,10 @@ OPEN_DEAL = Deal(face_down=(0, 1, 2, 3, 4, 5, 6),
 #: Spider's: fifty-four of a hundred and four; the fifty left are five rows off the stock.
 SPIDER_DEAL = Deal(face_down=(5, 5, 5, 5, 4, 4, 4, 4, 4, 4),
                    face_up=(1, 1, 1, 1, 1, 1, 1, 1, 1, 1))
+
+BEETLE_DEAL = Deal(face_down=(0,) * 10,
+                   face_up=(5, 5, 5, 5, 4, 4, 4, 4, 4, 4))
+GARGANTUA_DEAL = Deal(face_down=tuple(range(9)), face_up=(1,) * 9)
 
 
 # -- the six rule sets --
@@ -258,9 +264,22 @@ SPIDER_FOUR_SUITS = Variant(
     empty_column=any_card, foundation_takes=a_finished_run, home_lift=len(RANKS),
     runs_leave_on_their_own=True)
 
+GARGANTUA = Variant(
+    name="Gargantua", short_name="Gargantua", builds_on=alternating_colours,
+    lift=a_built_run, deal=GARGANTUA_DEAL, stock=GARGANTUA_STOCK,
+    suits=SUITS, copies=2)
+
+BEETLE = Variant(
+    name="Beetle", short_name="Beetle", builds_on=any_suit,
+    lift=a_same_suit_run, deal=BEETLE_DEAL, stock=DEAL_ACROSS_THE_COLUMNS,
+    suits=SUITS, copies=2, empty_column=any_card,
+    foundation_takes=a_finished_run, home_lift=len(RANKS),
+    runs_leave_on_their_own=True)
+
 #: gentlest first
 VARIANTS = (KLONDIKE, DRAW_THREE, YUKON,
-            SPIDER_ONE_SUIT, SPIDER_TWO_SUITS, SPIDER_FOUR_SUITS)
+            SPIDER_ONE_SUIT, SPIDER_TWO_SUITS, SPIDER_FOUR_SUITS,
+            GARGANTUA, BEETLE)
 
 
 # -- six additional tables (the original six Variant instances above are unchanged) --
@@ -302,4 +321,12 @@ SPECIAL_VARIANTS = (
     SpecialVariant("TriPeaks", "TriPeaks", 10, 0, True, True),
     SpecialVariant("Relaxed Pyramid", "Pyramid", 7, 0, True, True),
     SpecialVariant("Scorpion II", "Scorpion II", 7, 0, True, False),
+)
+
+# Distinctive layouts and draw mechanics use the isolated novelty engine.
+SPECIAL_VARIANTS += (
+    SpecialVariant("Black Hole", "Black Hole", 17, 1),
+    SpecialVariant("Zodiac", "Zodiac", 12, 8, True, True),
+    SpecialVariant("Birthday", "Birthday", 4, 4, True, True),
+    SpecialVariant("Beleaguered Castle", "Castle", 8, 4),
 )
