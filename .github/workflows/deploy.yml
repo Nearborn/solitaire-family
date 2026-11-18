@@ -45,7 +45,7 @@ jobs:
       - name: Verify browser viewport CSS and updated offline cache
         run: |
           grep -q 'solitaire-viewport-css' build/web/index.html
-          grep -q 'solitaire-v1.4.2' build/web/sw.js
+          grep -q 'solitaire-v1.5.0' build/web/sw.js
           grep -q 'solitaireDealSeed' build/web/index.html
           grep -q 'canvas#canvas {' build/web/index.html
           grep -q 'pointer_bridge.js' build/web/index.html
